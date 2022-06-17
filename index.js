@@ -23,21 +23,22 @@ function createItemObject(arr, text, id) {
   arr.push(itemObject);
 }
 
-// function createTaskObject(arr, id) {
-//   const tasksObject = {};
-//   tasksObject.done = false;
-//   tasksObject.id = id;
-//
-//   arr.push(tasksObject)
-// }
+function createTaskObject(arr, id) {
+  const tasksObject = {};
+  tasksObject.done = false;
+  tasksObject.id = id;
+
+  arr.push(tasksObject)
+}
 
 function changeItemDone(arr, item) {
   const arrCache = arr;
-  arr.forEach((obj) => {
+  arrCache.forEach((obj) => {
     if (obj.id === item.id) {
       obj.done = !obj.done;
     }
-  });
+  })
+  return arrCache;
 }
 
 
@@ -49,7 +50,7 @@ function onChange(item) {
     cache = JSON.parse(localStorage.getItem('to-do'));
     item.classList.toggle('checked');
 
-    changeItemDone(cache, item);
+    cache = changeItemDone(cache, item);
     localStorage.setItem('to-do', JSON.stringify(cache));
   })
   //delete
@@ -82,8 +83,17 @@ function adviceCheck(value) {
       }
     })
   });
+}
 
+function adviceAddEvent(checkbox, name) {
+  checkbox.addEventListener('change', () => {
+    sessionCache = JSON.parse(sessionStorage.getItem('tasks'));
+    console.log(name);
+    name.classList.toggle('checked');
 
+    sessionCache = changeItemDone(sessionCache, checkbox);
+    sessionStorage.setItem('tasks', JSON.stringify(sessionCache));
+  })
 }
 
 function init() {
@@ -91,20 +101,35 @@ function init() {
   if (cache.length !== 0) {
     for (let obj of cache) {
       const post = newItemTemplate.cloneNode(true);
+      const checkbox = post.querySelector('.checkbox');
       const postText = post.querySelector('span')
       post.id = obj.id;
       postText.textContent = obj.text;
 
       if (obj.done) {
         post.classList.add('checked');
+        checkbox.checked = true;
       } else {
         post.classList.remove('checked');
+        checkbox.checked = false;
       }
       onChange(post);
-
       list.append(post);
     }
   }
+
+  let sessionCacheTemp = JSON.parse(sessionStorage.getItem('tasks'));
+  sessionCacheTemp.forEach((item, i) => {
+    let checboxTemp = adviceNames[i].querySelector('.advice-item__checkbox')
+    checboxTemp.id = item.id;
+    if (item.done) {
+      checboxTemp.checked = true;
+    } else {
+        checboxTemp.checked = false;
+    }
+  });
+
+
 
   form.addEventListener('submit', function (evt) {
     evt.preventDefault();
@@ -127,25 +152,18 @@ function init() {
     text.value = '';
   })
 
-  adviceNames.forEach((name) => {
+  adviceNames.forEach((name, i) => {
     const adviceCheckbox = name.querySelector('.advice-item__checkbox');
-    //adviceCheckbox.id = adviceCheckbox.id === ''? (Math.random() * 15.75).toFixed(2) : adviceCheckbox.id;
 
     if (sessionCache.length < adviceNames.length) {
+      adviceCheckbox.id = i;
+
       createTaskObject(sessionCache, adviceCheckbox.id);
-      //sessionStorage.setItem('tasks', JSON.stringify(sessionCache));
+      sessionStorage.setItem('tasks', JSON.stringify(sessionCache));
     }
-
-    name.addEventListener('change', () => {
-      //sessionStorage = JSON.parse(localStorage.getItem('tasks'));
-      name.classList.toggle('checked');
-
-      //changeItemDone(sessionCache, adviceCheckbox);
-      //sessionStorage.setItem('tasks', JSON.stringify(sessionCache));
-    })
+    adviceAddEvent(adviceCheckbox, name);
   });
   adviceCheck(adviceItems1);
   adviceCheck(adviceItems2);
 }
-
 init()

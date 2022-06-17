@@ -32,21 +32,21 @@ function createItemObject(arr, text, id) {
 // }
 
 function changeItemDone(arr, item) {
-  arr.map(obj => {
-    if (obj.id === item.id && obj.done === false) {
-      obj.done = true;
-    } else if(obj.id === item.id && obj.done !== false) {
-      obj.done = false;
-    };
-  })
+  const arrCache = arr;
+  arr.forEach((obj) => {
+    if (obj.id === item.id) {
+      obj.done = !obj.done;
+    }
+  });
 }
+
 
 function onChange(item) {
   const listCheckbox = item.querySelector('.checkbox');
   const deleteButton = item.querySelector('.delete-button');
   //changing
   listCheckbox.addEventListener('change', function () {
-    cahce = JSON.parse(localStorage.getItem('to-do'));
+    cache = JSON.parse(localStorage.getItem('to-do'));
     item.classList.toggle('checked');
 
     changeItemDone(cache, item);
@@ -62,6 +62,30 @@ function onChange(item) {
   })
 }
 
+function adviceCheck(value) {
+  const adviceNameTemp = value.querySelectorAll('.advice-name');
+  const arr = [];
+
+  adviceNameTemp.forEach((item) => {
+    const checkObj = {};
+    checkObj.name = adviceNameTemp;
+    checkObj.checkbox = item.querySelector('.advice-item__checkbox');
+    arr.push(checkObj);
+  });
+
+  arr.forEach((item) => {
+    item.checkbox.addEventListener('change', (item) => {
+      if (arr.every((obj) => (obj.checkbox.checked))) {
+        value.classList.add('complete')
+      } else {
+        value.classList.remove('complete')
+      }
+    })
+  });
+
+
+}
+
 function init() {
 
   if (cache.length !== 0) {
@@ -70,6 +94,12 @@ function init() {
       const postText = post.querySelector('span')
       post.id = obj.id;
       postText.textContent = obj.text;
+
+      if (obj.done) {
+        post.classList.add('checked');
+      } else {
+        post.classList.remove('checked');
+      }
       onChange(post);
 
       list.append(post);
@@ -85,7 +115,7 @@ function init() {
     let itemText = text.value;
     let clone = newItemTemplate.cloneNode(true);
     let description = clone.querySelector('span');
-    
+
     clone.id = randomId.toFixed(2);
     description.textContent = itemText;
     onChange(clone);
@@ -114,30 +144,6 @@ function init() {
       //sessionStorage.setItem('tasks', JSON.stringify(sessionCache));
     })
   });
-
-  function adviceCheck(value) {
-    const adviceNameTemp = value.querySelectorAll('.advice-name');
-    const arr = [];
-
-    adviceNameTemp.forEach((item) => {
-      let checkObj = {};
-      checkObj.name = adviceNameTemp;
-      checkObj.checkbox = item.querySelector('.advice-item__checkbox');
-      arr.push(checkObj);
-    });
-
-    arr.forEach((item) => {
-      item.checkbox.addEventListener('change', (item) => {
-        if (arr.filter((obj) => (obj.checkbox.checked)).length === arr.length) {
-          value.classList.add('complete')
-        } else {
-          value.classList.remove('complete')
-        }
-      })
-    });
-
-
-  }
   adviceCheck(adviceItems1);
   adviceCheck(adviceItems2);
 }

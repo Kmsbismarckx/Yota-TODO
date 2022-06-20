@@ -57,7 +57,7 @@ function onChange(item) {
   deleteButton.addEventListener('click', function() {
     cache = JSON.parse(localStorage.getItem('to-do'))
     let deleteItem = cache.filter(obj => obj.id !== item.id);
-
+    cache = deleteItem;
     localStorage.setItem('to-do', JSON.stringify(deleteItem));
     item.remove();
   })
@@ -83,12 +83,12 @@ function adviceCheck(value) {
       }
     })
   });
+  return arr;
 }
 
 function adviceAddEvent(checkbox, name) {
   checkbox.addEventListener('change', () => {
     sessionCache = JSON.parse(sessionStorage.getItem('tasks'));
-    console.log(name);
     name.classList.toggle('checked');
 
     sessionCache = changeItemDone(sessionCache, checkbox);
@@ -98,7 +98,8 @@ function adviceAddEvent(checkbox, name) {
 
 function init() {
 
-  if (cache.length !== 0) {
+  if (localStorage.getItem('to-do')) {
+    cache = JSON.parse(localStorage.getItem('to-do'));
     for (let obj of cache) {
       const post = newItemTemplate.cloneNode(true);
       const checkbox = post.querySelector('.checkbox');
@@ -119,16 +120,39 @@ function init() {
   }
 
   let sessionCacheTemp = JSON.parse(sessionStorage.getItem('tasks'));
-  sessionCacheTemp.forEach((item, i) => {
-    let checboxTemp = adviceNames[i].querySelector('.advice-item__checkbox')
-    checboxTemp.id = item.id;
-    if (item.done) {
-      checboxTemp.checked = true;
-    } else {
-        checboxTemp.checked = false;
-    }
-  });
+  console.log(sessionCache);
+  const name1 = document.querySelector('.advice-item-1')
+  const name2 = document.querySelector('.advice-item-2')
+  if (sessionCacheTemp.length > 0) {
+    sessionCacheTemp.forEach((item, i) => {
+      let checkboxTemp = adviceNames[i].querySelector('.advice-item__checkbox');
+      let nameTemp = adviceNames[i]
+      checkboxTemp.id = item.id;
+      if (item.done) {
+        adviceCheck(name1);
+        adviceCheck(name2);
+      } else {
+        nameTemp.classList.remove('checked');
+      }
+    });
 
+    // function nameCheck(item) {
+    //
+    //   const itemName = Array.from(item.querySelectorAll('.advice-name'));
+    //   console.log(itemName[0].id);
+    //   if ( itemName.every( (obj) => {obj.classList.contains('.checked')}) ) {
+    //     item.classList.add('complete')
+    //   } else {
+    //     item.classList.remove('complete')
+    //   }
+    //
+    // }
+    // TODO: Пофиксить
+    // adviceCheck(name1);
+    // adviceCheck(name2);
+
+    sessionStorage.setItem('tasks', JSON.stringify(sessionCacheTemp));
+  }
 
 
   form.addEventListener('submit', function (evt) {

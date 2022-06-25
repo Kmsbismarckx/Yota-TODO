@@ -123,19 +123,21 @@ function init() {
   console.log(sessionCache);
   const name1 = document.querySelector('.advice-item-1')
   const name2 = document.querySelector('.advice-item-2')
-  if (sessionCacheTemp.length > 0) {
-    sessionCacheTemp.forEach((item, i) => {
-      let checkboxTemp = adviceNames[i].querySelector('.advice-item__checkbox');
-      let nameTemp = adviceNames[i]
-      checkboxTemp.id = item.id;
-      if (item.done) {
-        adviceCheck(name1);
-        adviceCheck(name2);
-      } else {
-        nameTemp.classList.remove('checked');
-      }
-    });
 
+  if (sessionCacheTemp) {
+    if (sessionCacheTemp.length > 0) {
+      sessionCacheTemp.forEach((item, i) => {
+        let checkboxTemp = adviceNames[i].querySelector('.advice-item__checkbox');
+        let nameTemp = adviceNames[i]
+        checkboxTemp.id = item.id;
+        if (item.done) {
+          adviceCheck(name1);
+          adviceCheck(name2);
+        } else {
+          nameTemp.classList.remove('checked');
+        }
+      });
+    }
     // function nameCheck(item) {
     //
     //   const itemName = Array.from(item.querySelectorAll('.advice-name'));

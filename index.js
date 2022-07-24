@@ -1,101 +1,163 @@
-const list = document.querySelector('.list');
-const listItems = list.children;
-const template = document.querySelector('#checklist-template').content;
-const newItemTemplate = template.querySelector('.checklist-item');
-const listLabel = list.querySelectorAll('label');
-const message = document.querySelector('.message');
-const form = document.querySelector('.input-text');
-const text = form.querySelector('input');
-const adviceNames = document.querySelectorAll('.advice-name')
-const adviceItems1 = document.querySelector('.advice-item-1');
-const adviceNames1 = adviceItems1.querySelectorAll('.advice-name');
-const adviceItems2 = document.querySelector('.advice-item-2')
-const adviceNames2 = adviceItems2.querySelectorAll('.advice-name');
-const cache = [];
+const list = document.querySelector(".list");
+const template = document.querySelector("#checklist-template").content;
+const newItemTemplate = template.querySelector(".checklist-item");
+const form = document.querySelector(".input-text");
+const adviceNames = document.querySelectorAll(".advice-name");
+const adviceItem1 = document.querySelector(".advice-item-1");
+const adviceItem2 = document.querySelector(".advice-item-2");
 
-/*function toLocal(item) {
-  let text = item.querySelector('span').textContent;
-  cache.push(localStorage.getItem('todo-list'))
-  cache.push(text);
-  localStorage.setItem('todo-list', cache);
-}*/
+let cache = JSON.parse(localStorage.getItem("to-do")) || [];
+let sessionCache = JSON.parse(sessionStorage.getItem("tasks")) || [];
 
-function onChange(item) {
-  const listCheckbox = item.querySelector('.checkbox');
-  const deleteButton = item.querySelector('.delete-button');
-
-  listCheckbox.addEventListener('change', function () {
-    item.classList.toggle('checked');
-  })
-
-  deleteButton.addEventListener('click', function() {
-    item.remove();
-  })
+function createItemObject(arr, id, text) {
+  arr.push({
+    text: text,
+    done: false,
+    id: id,
+  });
 }
 
-form.addEventListener('submit', function (evt) {
-  evt.preventDefault();
+function changeItemDone(arr, item) {
+  arr.forEach((obj) => {
+    if (obj.id === item.id) {
+      obj.done = !obj.done;
+    }
+  });
+  return arr;
+}
 
-  let itemText = text.value;
-  let clone = newItemTemplate.cloneNode(true);
-  let description = clone.querySelector('span');
-  description.textContent = itemText;
-  onChange(clone);
-  list.append(clone);
-  text.value = '';
-})
+function addListeners(item) {
+  const listCheckbox = item.querySelector(".checkbox");
+  const deleteButton = item.querySelector(".delete-button");
 
-function init() {
+  listCheckbox.addEventListener("change", function () {
+    item.classList.toggle("checked");
 
-  adviceNames.forEach((name) => {
-    const adviceCheckbox = name.querySelector('.advice-item__checkbox');
-    name.addEventListener('change', () => {
-      name.classList.toggle('checked');
-    })
+    cache = changeItemDone(cache, item);
+    localStorage.setItem("to-do", JSON.stringify(cache));
   });
 
-  //for (let i = 0; i < adviceNames.length; i++) {
-  //  adviceNameChange(adviceNames[i]);
-  //}
+  deleteButton.addEventListener("click", function () {
+    cache = cache.filter((obj) => obj.id !== item.id);
+    localStorage.setItem("to-do", JSON.stringify(cache));
+    item.remove();
+  });
+}
 
-  function adviceCheck(value) {
-    const adviceNameTemp = value.querySelectorAll('.advice-name');
-    const arr = [];
-    adviceNameTemp.forEach((item) => {
-      arr.push(item.querySelector('.advice-item__checkbox'))
-    });
-    arr.forEach((item) => {
-      item.addEventListener('change', (item) => {
-      if (arr.filter((item) => (item.checked)).length === arr.length) {
-        value.style.backgroundColor = '#00aeef';
+function adviceCheck(value) {
+  const adviceNameTemp = value.querySelectorAll(".advice-name");
+  const arr = [];
+
+  adviceNameTemp.forEach((item) => {
+    const checkObj = {
+      name: item,
+      checkbox: item.querySelector(".advice-item__checkbox"),
+    };
+
+    arr.push(checkObj);
+  });
+
+  arr.forEach((item) => {
+    item.checkbox.addEventListener("change", () => {
+      if (arr.every((obj) => obj.checkbox.checked)) {
+        value.classList.add("complete");
       } else {
-        value.style.backgroundColor = 'white';
+        value.classList.remove("complete");
       }
     });
   });
-
-
-    /*const adviceCheckbox = name.querySelectorAll('.advice-item__checkbox');
-    adviceCheckbox.forEach((item) => {
-      console.log(item.checked)
-    });*/
-  }
-
-  adviceCheck(adviceItems1);
-  adviceCheck(adviceItems2);
-
-  /*let temp = localStorage.getItem('todo-list');
-  if (temp !== []) {
-    temp = temp.split(',');
-
-    for (let item of temp) {
-      let memItem = newItemTemplate.cloneNode(true)
-      let memDescription = memItem.querySelector('span');
-      memDescription.textContent = item;
-      list.append(memItem);
-      onChange(memItem);
-    }
-  }*/
+  return arr;
 }
 
-init()
+function adviceAddEvent(checkbox, name) {
+  checkbox.addEventListener("change", () => {
+    name.classList.toggle("checked");
+
+    sessionCache = changeItemDone(sessionCache, checkbox);
+    sessionStorage.setItem("tasks", JSON.stringify(sessionCache));
+  });
+}
+
+function addAdviceComplete(item) {
+  const tempCheckbox = item.querySelectorAll(".advice-item__checkbox");
+
+  if (Array.from(tempCheckbox).every((obj) => obj.checked)) {
+    item.classList.add("complete");
+  } else {
+    item.classList.remove("complete");
+  }
+}
+
+function init() {
+  if (localStorage.getItem("to-do")) {
+    for (let obj of cache) {
+      const post = newItemTemplate.cloneNode(true);
+      const checkbox = post.querySelector(".checkbox");
+      const postText = post.querySelector("span");
+      post.id = obj.id;
+      postText.textContent = obj.text;
+
+      if (obj.done) {
+        post.classList.add("checked");
+        checkbox.checked = true;
+      } else {
+        post.classList.remove("checked");
+        checkbox.checked = false;
+      }
+      addListeners(post);
+      list.append(post);
+    }
+  }
+
+  if (JSON.parse(sessionStorage.getItem("tasks"))) {
+    sessionCache.forEach((item, i) => {
+      let checkboxTemp = adviceNames[i].querySelector(".advice-item__checkbox");
+      let nameTemp = adviceNames[i];
+      checkboxTemp.id = item.id;
+
+      if (item.done) {
+        nameTemp.classList.add("checked");
+        checkboxTemp.checked = true;
+      } else {
+        nameTemp.classList.remove("checked");
+      }
+    });
+    addAdviceComplete(adviceItem1);
+    addAdviceComplete(adviceItem2);
+  }
+
+  form.addEventListener("submit", function (evt) {
+    evt.preventDefault();
+
+    const text = form.querySelector("input");
+    let itemText = text.value;
+    let clone = newItemTemplate.cloneNode(true);
+    let description = clone.querySelector("span");
+
+    clone.id = cache.length;
+    description.textContent = itemText;
+    addListeners(clone);
+
+    createItemObject(cache, clone.id, itemText);
+    localStorage.setItem("to-do", JSON.stringify(cache));
+
+    list.append(clone);
+    text.value = "";
+  });
+
+  adviceNames.forEach((name, i) => {
+    const adviceCheckbox = name.querySelector(".advice-item__checkbox");
+
+    if (sessionCache.length < adviceNames.length) {
+      adviceCheckbox.id = `${i}`;
+
+      createItemObject(sessionCache, adviceCheckbox.id);
+      sessionStorage.setItem("tasks", JSON.stringify(sessionCache));
+    }
+    adviceAddEvent(adviceCheckbox, name);
+  });
+  adviceCheck(adviceItem1);
+  adviceCheck(adviceItem2);
+}
+
+init();

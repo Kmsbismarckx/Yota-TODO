@@ -22,7 +22,7 @@ body {
   justify-content: space-between;
   align-items: center;
   height: 80px;
-  box-shadow: 0px 1px 1px 0px #ccc;
+  box-shadow: 0 1px 1px 0 #ccc;
   margin-bottom: 20px;
   background-color: white;
   z-index: 2;
@@ -59,27 +59,32 @@ body {
 
 
 .work-links .crm {
-  background: white url('crm_logo.svg') no-repeat 50%;
+  background: white url('img/crm_logo.svg') no-repeat 50%;
 }
 
 .work-links .hotline {
-  background: white url('hotline_logo.svg') no-repeat 50%;
+  background: white url('img/hotline_logo.svg') no-repeat 50%;
   background-size: 50px 50px;
 }
 
 .work-links .tables {
-  background: white url('tables_logo.svg') no-repeat 50%;
+  background: white url('img/tables_logo.svg') no-repeat 50%;
   background-size: 50px;
 }
 
 .work-links .location {
-  background: white url('location_logo.svg') no-repeat 50%;
+  background: white url('img/location_logo.svg') no-repeat 50%;
   background-size: 50px;
 }
 
 .work-links .iknow {
-  background: white url('iknow_logo.svg') no-repeat 50%;
+  background: white url('img/iknow_logo.svg') no-repeat 50%;
   background-size: 50px;
+}
+
+.work-links .study {
+  background: white url('img/yota-study_logo.svg') no-repeat 50%;
+  background-size: contain;
 }
 
 .main {
@@ -96,7 +101,7 @@ body {
 }
 
 .wrapper {
-  width: 85%;
+  width: 540px;
   margin: 0 auto;
 }
 
@@ -109,17 +114,24 @@ body {
 .advice-item {
   position: relative;
   width: 225px;
-  height: 400px;
   margin-bottom: 50px;
   margin-left: 25px;
-  box-shadow: 0px 0px 5px 0px #ccc;
+  box-shadow: 0 0 5px 0 #ccc;
+  border-radius: 20px;
+}
+
+.advice-item.complete {
+  background-color: #00aeef;
+}
+
+.advice-item.complete .advice-name {
+  text-decoration-color: white;
 }
 
 .advice-item__header {
   width: 100%;
   font-weight: 600;
   font-size: 125%;
-  background-color: inherit;
   box-sizing: border-box;
   padding: 10px;
   text-align: center;
@@ -128,7 +140,6 @@ body {
 
 .advice-item__text {
   margin: 0;
-  background-color: inherit;
   width: inherit;
   box-sizing: border-box;
   padding: 5px 5px 5px 40px;
@@ -142,6 +153,8 @@ body {
 
 .list {
   display: flex;
+  justify-content: center;
+  max-width: 540px;
   position: relative;
   flex-direction: column;
   color: white;
@@ -155,17 +168,17 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
+  max-width: 540px;
   padding: 10px 20px;
   box-sizing: border-box;
-  background-color: #00aeef;
-  border-radius: 25px;
+  background-color: white;
+  color: #00aeef;
+  border-radius: 20px;
   border-color: white;
-  box-sizing: border-box;
   margin-bottom: 20px;
-  box-shadow: 0px 2px 5px 0px #ccc;
+  box-shadow: 0 2px 5px 0 #ccc;
   font-size: 125%;
-  transition: all 0.6s ease;
+  transition: all 0.3s ease;
 }
 
 .checklist-item span {
@@ -192,10 +205,10 @@ body {
   width: 40px;
   height: 40px;
   border: none;
-  background: url('delete_cross.svg') no-repeat 50% 50%;
+  background: url('img/delete_cross.svg') no-repeat 50% 50%;
 }
 
-.checklist-item input {
+.checklist-item .checkbox {
   position: relative;
   visibility: hidden;
   width: 40px;
@@ -203,47 +216,41 @@ body {
 
  }
 
-.checklist-item input::after {
+.checklist-item .checkbox::after {
   box-sizing: content-box;
   display: block;
   position: absolute;
   visibility: visible;
   content: '';
   font-size: 0;
-  top: 0px;
-  left: 0px;
+  top: 0;
+  left: 0;
   width: 40px;
   height: 40px;
-  box-shadow: 0px 0px 2px 2px #ccc;
+  box-shadow: 0 0 2px 2px #ccc;
   background-color: white;
   border-radius: 50%;
-  transition: all 0.6s ease;
+  transition: all 0.3s ease;
 }
 
 .checklist-item input:checked::after {
   box-sizing: border-box;
   background-color: #00aeef;
-  box-shadow: 0px 0px 2px 2px #ccc;
+  box-shadow: 0 0 2px 2px #ccc;
   border: 2px solid white;
 }
 
 .checklist-item.checked {
-  background-color: #99ff99;
-  color: #00aeef;
+  background-color: #00aeef;
+  color: white;
+}
+
+.delete-button {
+  transition: all 0.3s ease;
 }
 
 .delete-button:hover {
-  animation: rotate 0.5s ease;
-}
-
-@keyframes rotate {
-  0% {
-    transform: rotate(0deg);
-
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+  transform: scale(1.1);
 }
 
 .advice-item__checkbox {
@@ -256,7 +263,6 @@ body {
 }
 
 .message {
-  display: flex;
   justify-content: center;
   align-items: center;
   position: fixed;
@@ -267,7 +273,7 @@ body {
   display: none;
   background-color: #00aeef;
   border-radius: 10px;
-  box-shadow: 0px 0px 5px 5px #ccc;
+  box-shadow: 0 0 5px 5px #ccc;
   transition: all 2s ease;
 }
 
@@ -287,37 +293,35 @@ body {
 
 .input-text {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
+  width: 540px;
   margin-bottom: 50px;
 }
 .input-text input {
-  font-family: 'Yota Digit';
+  font-family: 'Yota Digit', monospace;
   font-weight: 600;
-  width: 50%;
-  height: 50px;
-  padding: 0px 20px;
-  margin-right: 50px;
+  width: 350px;
+  height: 30px;
+  padding: 0 20px;
   color: #00aeef;
-  border: 1px solid;
-  box-shadow: 0px 0px 5px 1px #ccc;
-  border-color: #00aeef;
+  box-shadow: 0 0 5px 1px #ccc;
+  border: 1px solid #00aeef;
   border-radius: 10px;
 }
 
 .input-text input:hover {
-  box-shadow: 0px 0px 5px 0px #00aeef;
+  box-shadow: 0 0 5px 0 #00aeef;
 }
 
 .input-text input:focus {
-  border: 1px solid;
   outline: none;
   background-color: #ddd;
-  border-color: #00aeef;
+  border: 1px solid #00aeef;
 }
 
 .input-text .submit-button {
-  font-family: 'Yota Digit';
+  font-family: 'Yota Digit', monospace;
   font-weight: 900;
   font-size: 14px;
   width: 120px;
@@ -326,13 +330,13 @@ body {
   color: white;
   background-color: #00aeef;
   border: none;
-  box-shadow: 0px 0px 5px 1px #ccc;
+  box-shadow: 0 0 5px 1px #ccc;
   padding: 10px;
   border-radius: 20px;
 }
 
 .input-text .submit-button:hover {
-  transform: scale(1.2);
+  transform: scale(1.1);
 }
 
 .input-text .submit-button:active {
